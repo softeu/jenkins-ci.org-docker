@@ -2,12 +2,21 @@ FROM ubuntu:14.04
 
 RUN echo "1.565.1" > .lts-version-number
 
-RUN apt-get update && apt-get install -y wget git curl zip
-RUN apt-get update && apt-get install -y --no-install-recommends openjdk-7-jdk
-RUN apt-get update && apt-get install -y maven ant ruby rbenv make
+RUN apt-get update && apt-get install -y wget git curl zip vim
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-7-jdk openjdk-6-jdk
+RUN apt-get update && apt-get install -y maven2 maven ant ruby rbenv make
+
+RUN apt-get -qq update && apt-get -qqy install software-properties-common
+RUN add-apt-repository -y ppa:webupd8team/java && apt-get -qq update
+
+RUN echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+
+RUN apt-get -qqy install oracle-java7-installer oracle-java6-installer
+
+
 
 RUN wget -q -O - http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key | sudo apt-key add -
-RUN echo deb http://pkg.jenkins-ci.org/debian-stable binary/ >> /etc/apt/sources.list
+RUN echo deb http://pkg.jenkins-ci.org/debian binary/ >> /etc/apt/sources.list
 RUN apt-get update && apt-get install -y jenkins
 RUN mkdir -p /var/jenkins_home && chown -R jenkins /var/jenkins_home
 ADD init.groovy /tmp/WEB-INF/init.groovy
